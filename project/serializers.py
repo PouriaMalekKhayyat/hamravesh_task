@@ -9,4 +9,4 @@ class AppSerializer(serializers.ModelSerializer):
 class RunSerializer(serializers.ModelSerializer):
     class Meta:
         model = Run
-        fields = ['id', 'status', 'running_time', 'name', 'image', 'envs', 'command', 'app']
+        fields = ['id', 'status', 'running_time', 'name', 'image', 'envs', 'command', 'app', 'img_id']
