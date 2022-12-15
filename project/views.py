@@ -5,10 +5,6 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
 from .docker_manager import DockerManager
-import docker
-
-client = docker.from_env()
-
 
 @api_view(['POST'])
 def app_build(request):
