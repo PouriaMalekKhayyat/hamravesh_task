@@ -6,6 +6,17 @@ class AppSerializer(serializers.ModelSerializer):
         model = App
         fields = ['id', 'name', 'image', 'envs', 'command']
 
+    def validate_name(self, name):
+        if len(name) < 4:
+            raise serializers.ValidationError('name can not be less than 4 characters')
+        return name
+
+    def validate_command(self, command):
+        if command != None:
+            if command.startswith('#'):
+                raise serializers.ValidationError('not an acceptable command')
+        return command
+
 class RunSerializer(serializers.ModelSerializer):
     class Meta:
         model = Run
