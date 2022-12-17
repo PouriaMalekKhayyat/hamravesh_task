@@ -14,9 +14,7 @@ class DockerManager():
     @classmethod
     def run_docker_command(cls, image, envs, cmd):
         img = cls.client.images.pull(image)
-        #container = cls.client.containers.run(img, detach=True)
-
-        container = cls.client.containers.run(img, command=cmd, environment=envs, detached=True)
+        container = cls.client.containers.run(img, command=cmd, environment=envs, detach=True)
         return container.attrs['Id']
 
     @classmethod
@@ -28,11 +26,12 @@ class DockerManager():
     def reload_docker_cont(cls, id):
         cont = cls.client.containers.get(id)
         cont.reload()
-        running_time = time_convert(cont.attrs['State']['FinishedAt']) - time_convert(cont.attrs['State']['StartedAt'])
         status = cont.attrs['State']['Running']
         if status == False:
+            running_time = time_convert(cont.attrs['State']['FinishedAt']) - time_convert(cont.attrs['State']['StartedAt'])
             status = 'finished'
         else:
+            running_time = int(time.time()) - time_convert(cont.attrs['State']['StartedAt'])
             status = 'running'
         return running_time, status
 

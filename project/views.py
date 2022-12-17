@@ -51,7 +51,7 @@ def app_run(request, id):
         return Response(status=status.HTTP_404_NOT_FOUND)
     
     try:
-        img_id = DockerManager.run_docker_command(app.image, app.envs, app.command)
+        cont_id = DockerManager.run_docker_command(app.image, app.envs, app.command)
         # create run object in db
         serializer = RunSerializer(data={
             'status': 'running',
@@ -61,25 +61,31 @@ def app_run(request, id):
             'envs': app.envs,
             'command': app.command,
             'app': id,
-            'img_id': img_id
+            'cont_id': cont_id
             })
         if serializer.is_valid():
             serializer.save()
         else:
-            return Response(status=status.HTTP_409_CONFLICT)
+            return Response(status=status.HTTP_406_NOT_ACCEPTABLE)
         return Response(status=status.HTTP_200_OK)
     except Exception:
-        return JsonResponse({'msg': 'Error running command'}, status=status.HTTP_406_NOT_ACCEPTABLE)
+        return JsonResponse(
+            {'msg': 'Error running command, you might want to check if your image is valid.'},
+             status=status.HTTP_406_NOT_ACCEPTABLE)
     
 @api_view(['GET'])
 def run_list(request, id):
+    try:
+        app = App.objects.get(pk=id)
+    except App.DoesNotExist:
+        return Response(status=status.HTTP_404_NOT_FOUND)
     runs = Run.objects.all().filter(app_id=id)
     for run in runs:
-        running_time, cont_status = DockerManager.reload_docker_cont(run.img_id)
+        running_time, cont_status = DockerManager.reload_docker_cont(run.cont_id)
         run.running_time = running_time
         run.status = cont_status
         run.save()
-    runs = Run.objects.all().filter(app_id=id).filter(status='finished')
+    runs = Run.objects.all().filter(app_id=id)
     serializer = RunSerializer(runs, many=True)
     return JsonResponse({'runs': serializer.data}, status=status.HTTP_200_OK)
 
@@ -87,7 +93,7 @@ def run_list(request, id):
 def run_status(request, id):
     try:
         run = Run.objects.get(pk=id)
-        _, cont_status = DockerManager.reload_docker_cont(run.img_id)
+        _, cont_status = DockerManager.reload_docker_cont(run.cont_id)
         run.status = cont_status
         return JsonResponse({'status': cont_status}, status=status.HTTP_200_OK)
     except Run.DoesNotExist:

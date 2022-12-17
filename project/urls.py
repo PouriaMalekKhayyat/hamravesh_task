@@ -23,6 +23,6 @@ urlpatterns = [
     path('apps/<int:id>/', views.app_detail),
     path('apps/<int:id>/run/', views.app_run),
     path('apps/<int:id>/history/', views.run_list),
-    path('runs/<int:id>/status', views.run_status),
+    path('runs/<int:id>/status/', views.run_status),
     path('admin/', admin.site.urls),
 ]
