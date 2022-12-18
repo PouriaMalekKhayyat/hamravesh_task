@@ -18,11 +18,11 @@ from django.urls import path
 from project.views import app_views, run_views
 
 urlpatterns = [
-    path('apps/', app_views.app_list),
-    path('apps/build/', app_views.app_build),
-    path('apps/<int:id>/', app_views.app_detail),
-    path('apps/<int:id>/run/', app_views.app_run),
-    path('apps/<int:id>/history/', run_views.run_list),
-    path('runs/<int:id>/status/', run_views.run_status),
+    path('apps/', app_views.app_list, name='app_list'),
+    path('apps/build/', app_views.app_build, name='app_build'),
+    path('apps/<int:id>/', app_views.app_detail, name='app_detail'),
+    path('apps/<int:id>/run/', app_views.app_run, name='app_run'),
+    path('apps/<int:id>/history/', run_views.run_list, name='run_list'),
+    path('runs/<int:id>/status/', run_views.run_status, name='run_status'),
     path('admin/', admin.site.urls),
 ]
